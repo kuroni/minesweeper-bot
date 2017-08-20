@@ -1,0 +1,32 @@
+MSX allows you to make custom skins for the game. See the Help file.
+
+Notes about Skins. (Damien Moore, 18 Jan 2012)
+
+
+Skin Name		Creator			Player ID#		Original Idea			Date
+==========		==========		=========	==============			===========	
+
+winbwskin		Curtis Bright		ID 3414		Windows monochrome
+win98skin		Curtis Bright		ID 3414		Windows 98
+winxpskin		Curtis Bright		ID 3414		Windows XP
+coloursonlyskin		Curtis Bright 		ID 3414		Elmar Zimmermann (ID 322)
+cloneskin		Rodrigo Camargo		ID 1480		Clone			
+hibbelerskin		Nicholas Hibbeler						
+icicleskin		Aryeh Draeger		ID 1323						
+narkomaniaskin		Kostas Symeonidis			Narkomania							
+oceanskin		C.L.							
+predatorskin		Dmitriy Sukhomlynov 	ID 1495		Arbiter	
+scratchskin		Kris Decker					
+symbolskin		Tobias Banzhaf		ID 1156						
+unknownskin			
+
+Damien added into MSX 1.15 download on 18 Jan 2012:
+
+mavizskin		Mantas Vykertas
+pacmanskin		Ben A-more
+marioskin		Ben A-more
+mineskin		Philip Jovim					
+vistagreenflowerskin	Mohammad Hosseyni 	ID 2230		Windows Vista			31 Dec 2011
+vistagreenmineskin	Mohammad Hosseyni 	ID 2230		Windows Vista			31 Dec 2011
+vistablueflowerskin	Mohammad Hosseyni 	ID 2230		Windows Vista			31 Dec 2011
+vistabluemineskin	Mohammad Hosseyni 	ID 2230		Windows Vista			31 Dec 2011
