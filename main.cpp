@@ -3,17 +3,10 @@
 #include <queue>
 #include <windows.h>
 
-HWND hwnd;
-RECT resolution;
+HWND win;
+RECT res;
 POINT origin, restart_button, mine_number, marker;
 int grid_width, grid_height, mines;
-
-struct ind
-{
-    int u, v;
-};
-
-HDC hdc = GetDC(HWND_DESKTOP);
 BYTE *screen_data = 0;
 
 namespace NCursor
@@ -83,13 +76,13 @@ const int color_code[12][3] =
         {224, 96, 0},    // end game
 };
 
-int color_dict[256][256][256], w, h;
+int dict[256][256][256], w, h;
 
 void init()
 {
-    memset(color_dict, -1, sizeof(color_dict));
+    memset(dict, -1, sizeof(dict));
     for (int i = 0; i < 12; i++)
-        color_dict[color_code[i][0]][color_code[i][1]][color_code[i][2]] = i;
+        dict[color_code[i][0]][color_code[i][1]][color_code[i][2]] = i;
     RECT desktop;
     CONST HWND hdesktop = GetDesktopWindow();
     GetWindowRect(hdesktop, &desktop);
@@ -134,7 +127,7 @@ inline SRgb get_rgb(int x, int y)
 
 inline int find_color(SRgb p)
 {
-    return color_dict[p.r][p.g][p.b];
+    return dict[p.r][p.g][p.b];
 }
 
 int scan_box(int u, int v)
@@ -145,7 +138,7 @@ int scan_box(int u, int v)
     return find_color(pixel);
 }
 
-int custom_scan(int x, int y)
+int scan(int x, int y)
 {
     SRgb pixel = get_rgb(x, y);
     std::cerr << pixel.r << " " << pixel.g << " " << pixel.b << '\n';
@@ -155,31 +148,34 @@ int custom_scan(int x, int y)
 
 namespace NSolve
 {
+
+int w, h;
+
 void init()
 {
     std::cout << "Searching for application ...\n";
     do
-        hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
-    while (hwnd == 0);
+        win = FindWindow(NULL, TEXT("Minesweeper X"));
+    while (win == 0);
     std::cout << "Bringing the application to top ... \n";
     Sleep(500);
-    SetForegroundWindow(hwnd);
-    GetWindowRect(hwnd, &resolution);
-    std::cout << resolution.left << " " << resolution.right << " " << resolution.top << " " << resolution.bottom << '\n';
-    origin.x = resolution.left + 22;
-    origin.y = resolution.top + 110;
-    grid_width = (resolution.right - 19 - origin.x) / 16 + 1;
-    grid_height = (resolution.bottom - 19 - origin.y) / 16 + 1;
+    SetForegroundWindow(win);
+    GetWindowRect(win, &res);
+    std::cout << res.left << " " << res.right << " " << res.top << " " << res.bottom << '\n';
+    origin.x = res.left + 22;
+    origin.y = res.top + 110;
+    w = (res.right - 19 - origin.x) / 16 + 1;
+    h = (res.bottom - 19 - origin.y) / 16 + 1;
     std::cout << "Board size found: " << grid_width << " " << grid_height << '\n';
-    mine_number.x = resolution.left + 23;
-    mine_number.y = resolution.top + 72;
+    mine_number.x = res.left + 23;
+    mine_number.y = res.top + 72;
     NRead::generate_bitmap();
-    mines = NRead::custom_scan(mine_number.x, mine_number.y) * 100
-          + NRead::custom_scan(mine_number.x + 13, mine_number.y) * 10
-          + NRead::custom_scan(mine_number.x + 26, mine_number.y);
+    mines = NRead::scan(mine_number.x, mine_number.y) * 100
+          + NRead::scan(mine_number.x + 13, mine_number.y) * 10
+          + NRead::scan(mine_number.x + 26, mine_number.y);
     std::cout << "Mines found: " << mines << '\n';
-    restart_button.x = (resolution.left + resolution.right) / 2;
-    restart_button.y = resolution.top + 74;
+    restart_button.x = (res.left + res.right) / 2;
+    restart_button.y = res.top + 74;
 }
 }
 
