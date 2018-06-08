@@ -3,17 +3,13 @@
 #include <queue>
 #include <windows.h>
 
-HWND win;
-RECT res;
-POINT origin, restart_button, mine_number, marker;
-int grid_width, grid_height, mines;
-BYTE *screen_data = 0;
+POINT tl, res, mn;
 
-namespace NCursor
+namespace NCuresor
 {
 void move_to(int x, int y)
 {
-    SetCursorPos(origin.x + (x * 16), origin.y + (y * 16));
+    SetCursorPos(tl.x + (x * 16), tl.y + (y * 16));
 }
 
 inline void left_click(int x, int y)
@@ -40,9 +36,9 @@ inline void right_click(int x, int y)
     SendInput(1, &Input, sizeof(INPUT));
 }
 
-void restart_game()
+void res_game()
 {
-    SetCursorPos(restart_button.x, restart_button.y);
+    SetCursorPos(res.x, res.y);
     INPUT Input = {0};
     Input.type = INPUT_MOUSE;
     Input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
@@ -55,11 +51,6 @@ void restart_game()
 
 namespace NRead
 {
-struct SRgb
-{
-    int r, g, b;
-};
-
 const int color_code[12][3] =
     {
         {255, 255, 255}, // blank
@@ -76,6 +67,11 @@ const int color_code[12][3] =
         {224, 96, 0},    // end game
 };
 
+struct SRgb
+{
+    int r, g, b;
+};
+BYTE *screen_data = 0;
 int dict[256][256][256], w, h;
 
 void init()
@@ -88,11 +84,12 @@ void init()
     GetWindowRect(hdesktop, &desktop);
     w = desktop.right;
     h = desktop.bottom;
+    std::cout << w << " " << h << '\n';
 }
 
 void generate_bitmap()
 {
-    hdc = GetDC(HWND_DESKTOP);
+    HDC hdc = GetDC(HWND_DESKTOP);
     HDC hdc_mem = CreateCompatibleDC(hdc);
     HBITMAP hbmp = CreateCompatibleBitmap(hdc, w, h);
     HGDIOBJ bmp_hold = SelectObject(hdc_mem, hbmp);
@@ -117,12 +114,7 @@ void generate_bitmap()
 
 inline SRgb get_rgb(int x, int y)
 {
-    return
-    {
-        screen_data[4 * (y * w + x) + 2],
-        screen_data[4 * (y * w + x) + 1],
-        screen_data[4 * (y * w + x)]
-    };
+    return {screen_data[4 * (y * w + x) + 2], screen_data[4 * (y * w + x) + 1], screen_data[4 * (y * w + x)]};
 }
 
 inline int find_color(SRgb p)
@@ -130,25 +122,28 @@ inline int find_color(SRgb p)
     return dict[p.r][p.g][p.b];
 }
 
-int scan_box(int u, int v)
-{
-    int x = origin.x + (16 * u),
-        y = origin.y + (16 * v);
-    SRgb pixel = get_rgb(x, y);
-    return find_color(pixel);
-}
-
 int scan(int x, int y)
 {
-    SRgb pixel = get_rgb(x, y);
-    std::cerr << pixel.r << " " << pixel.g << " " << pixel.b << '\n';
-    return find_color(pixel);
+    return find_color(get_rgb(x, y));
+}
+
+int scan_box(int u, int v)
+{
+    return find_color(get_rgb(tl.x + 16 * u, tl.y + 16 * v));
+}
+
+int scan_mine()
+{
+    int ret = 0;
+    for (int i = 0, cur = 100; i < 3; i++, cur /= 10)
+        ret += find_color(get_rgb(mn.x + 13 * i, mn.y)) * cur;
+    return ret;
 }
 }
 
 namespace NSolve
 {
-
+HWND win;
 int w, h;
 
 void init()
@@ -160,22 +155,23 @@ void init()
     std::cout << "Bringing the application to top ... \n";
     Sleep(500);
     SetForegroundWindow(win);
-    GetWindowRect(win, &res);
-    std::cout << res.left << " " << res.right << " " << res.top << " " << res.bottom << '\n';
-    origin.x = res.left + 22;
-    origin.y = res.top + 110;
-    w = (res.right - 19 - origin.x) / 16 + 1;
-    h = (res.bottom - 19 - origin.y) / 16 + 1;
-    std::cout << "Board size found: " << grid_width << " " << grid_height << '\n';
-    mine_number.x = res.left + 23;
-    mine_number.y = res.top + 72;
+
+    //Setting up board sizes, mine count and restart button
+    RECT tmp;
+    GetWindowRect(win, &tmp);
+    tl.x = tmp.left + 22;
+    tl.y = tmp.top + 110;
+    w = (tmp.right - 19 - tl.x) / 16 + 1;
+    h = (tmp.bottom - 19 - tl.y) / 16 + 1;
+    std::cout << "Board size found: " << w << " " << h << '\n';
+
+    mn.x = tmp.left + 23;
+    mn.y = tmp.top + 72;
     NRead::generate_bitmap();
-    mines = NRead::scan(mine_number.x, mine_number.y) * 100
-          + NRead::scan(mine_number.x + 13, mine_number.y) * 10
-          + NRead::scan(mine_number.x + 26, mine_number.y);
-    std::cout << "Mines found: " << mines << '\n';
-    restart_button.x = (res.left + res.right) / 2;
-    restart_button.y = res.top + 74;
+    std::cout << "Mines found: " << NRead::scan_mine() << '\n';
+
+    res.x = (tmp.left + tmp.right) / 2;
+    res.y = tmp.top + 74;
 }
 }
 
