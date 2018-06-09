@@ -1,2 +1,2 @@
-# msms
-Minesweeper X bot
+# Description
+Minesweeper bot for Minesweeper X client
