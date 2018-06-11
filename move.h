@@ -2,15 +2,15 @@
 #define MOVE_H
 #include "declare.h"
 
-namespace move
+namespace NMove
 {
-void left_click(const position &u)
+void left_click(const SPosition &u)
 {
 }
 
-void right_click(const position &u)
+void right_click(const SPosition &u)
 {
 }
-} // namespace cursor
+} // namespace NMove
 
 #endif MOVE_H // MOVE_H

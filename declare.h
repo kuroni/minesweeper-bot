@@ -3,10 +3,10 @@
 
 const int M = 105, N = 105, DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
 
-struct position
+struct SPosition
 {
     int x, y;
-    position(int _x, int _y) : x(_x), y(_y) {}
+    SPosition(int _x, int _y) : x(_x), y(_y) {}
 
     bool valid()
     {
