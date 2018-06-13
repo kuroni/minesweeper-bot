@@ -1,8 +1,7 @@
-#include "declare.h"
-#include "process.h"
+#include "read.h"
 #include "solve.h"
 
 int main()
 {
-    NProcess::init();
+    NRead::init();
 }

@@ -1,7 +1,7 @@
 #ifndef SOLVE_H
 #define SOLVE_H
 #include "declare.h"
-#include "process.h"
+#include "read.h"
 
 namespace NSolve
 {
@@ -16,7 +16,7 @@ struct SComponent
 
 void open(const SPosition &u)
 {
-    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NProcess::read(u)) == 0)
+    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NRead::read(u)) == 0)
         for (int i = 0; i < 8; i++)
             if (num[u.x + DX[i]][u.y + DY[i]] == -1)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));
@@ -52,7 +52,7 @@ void naive()
                     if (yes >> i & 1)
                     {
                         move = true;
-                        NProcess::click();
+                        NRead::click();
                         open(cur.ve[i]);
                     }
                     if (no >> i & 1)
@@ -71,7 +71,10 @@ void naive()
         tanker();
 }
 
-void tanker();
+void tanker()
+{
+    
+}
 } // namespace NSolve
 
 #endif // SOLVE_H

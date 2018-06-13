@@ -1,9 +1,9 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef READ_H
+#define READ_H
 #include "declare.h"
 #include "EasyBMP.h"
 
-namespace NProcess
+namespace NRead
 {
 struct STrie
 {
@@ -82,47 +82,46 @@ bool init()
     SetForegroundWindow(hwnd);
     RECT tmp;
     GetWindowRect(hwnd, &win);
-    std::cout << win.left << " " << win.top << " " << win.right << " " << win.bottom << '\n';
-    // HKEY reg;
-    // if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Brightsoft\\Minesweeper X"), 0, KEY_QUERY_VALUE, &reg) != ERROR_SUCCESS)
-    // {
-    //     board = boardxp;
-    //     mine = minexp;
-    //     face = facexp;
-    //     RegCloseKey(reg);
-    //     return true;
-    // }
-    // char val[SZ];
-    // DWORD len = SZ;
-    // std::fill(val, val + SZ, 0);
-    // RegQueryValueEx(reg, "Skin", NULL, NULL, (LPBYTE)&val, &len);
-    // if (val[0] == 0)
-    // {
-    //     board = boardxp;
-    //     mine = minexp;
-    //     face = facexp;
-    //     RegCloseKey(reg);
-    //     return true;
-    // }
-    // if (val[0] == 1)
-    // {
-    //     board = board98;
-    //     mine = mine98;
-    //     face = face98;
-    //     RegCloseKey(reg);
-    //     return true;
-    // }
-    // std::fill(val, val + SZ, 0);
-    // RegQueryValueEx(reg, "SkinPath", NULL, NULL, (LPBYTE)&val, &len);
-    // BMP bmp;
-    // bmp.ReadFromFile(val);
-    // RegCloseKey(reg);
-    // if ((board = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16)) == nullptr)
-    //     return false;
-    // if ((mine = construct({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, bmp, SPosition(0, 33), 11, 21, 12)) == nullptr)
-    //     return false;
-    // if ((face = construct({0, 2, 3}, bmp, SPosition(0, 55), 26, 26, 27)) == nullptr)
-    //     return false;
+    HKEY reg;
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Brightsoft\\Minesweeper X"), 0, KEY_QUERY_VALUE, &reg) != ERROR_SUCCESS)
+    {
+        board = boardxp;
+        mine = minexp;
+        face = facexp;
+        RegCloseKey(reg);
+        return true;
+    }
+    char val[SZ];
+    DWORD len = SZ;
+    RegQueryValueEx(reg, "Skin", NULL, NULL, (LPBYTE)&val, &len);
+    if (val[0] == 0)
+    {
+        board = boardxp;
+        mine = minexp;
+        face = facexp;
+        RegCloseKey(reg);
+        return true;
+    }
+    if (val[0] == 1)
+    {
+        board = board98;
+        mine = mine98;
+        face = face98;
+        RegCloseKey(reg);
+        return true;
+    }
+    std::fill(val, val + SZ, 0);
+    len = SZ;
+    RegQueryValueEx(reg, "SkinPath", NULL, NULL, (LPBYTE)&val, &len);
+    BMP bmp;
+    bmp.ReadFromFile(val);
+    RegCloseKey(reg);
+    if ((board = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16)) == nullptr)
+        return false;
+    if ((mine = construct({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, bmp, SPosition(0, 33), 11, 21, 12)) == nullptr)
+        return false;
+    if ((face = construct({0, 2, 3}, bmp, SPosition(0, 55), 26, 26, 27)) == nullptr)
+        return false;
     return true;
 }
 
@@ -133,6 +132,6 @@ void screen_shot()
 void click()
 {
 }
-} // namespace NProcess
+} // namespace NRead
 
-#endif PROCESS_H // PROCESS_H
+#endif // READ_H
