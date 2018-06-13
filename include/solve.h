@@ -16,7 +16,7 @@ struct SComponent
 
 void open(const SPosition &u)
 {
-    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NRead::read(u)) == 0)
+    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NRead::read(u, NRead::board)) == 0)
         for (int i = 0; i < 8; i++)
             if (num[u.x + DX[i]][u.y + DY[i]] == -1)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));

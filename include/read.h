@@ -14,31 +14,42 @@ struct STrie
     STrie(int _val, SPosition _pos) : val(_val), pos(_pos) {}
 } * board, *mine, *face, *boardxp, *minexp, *facexp, *board98, *mine98, *face98;
 
+struct SPixel
+{
+    int r, g, b;
+
+    SPixel(int _r, int _g, int _b) : r(_r), g(_g), b(_b) {}
+};
+
 HWND hwnd;
 RECT win;
-SPosition bpos(9, 52);
 
-int hash(RGBApixel *px)
+int hash(SPixel px)
 {
-    return ((int)px->Red << 16) | ((int)px->Green << 8) | ((int)px->Blue);
-}   
+    return (px.r << 16) | (px.g << 8) | px.b;
+}
+
+SPixel conv(RGBApixel *px)
+{
+    return SPixel((int)px->Red, (int)px->Green, (int)px->Blue);
+}
+
+SPixel scan(int x, int y)
+{
+    HDC hdc = GetDC(NULL);
+    COLORREF px = GetPixel(hdc, x, y);
+    ReleaseDC(NULL, hdc);
+    return SPixel(GetRValue(px), GetGValue(px), GetBValue(px));
+}
 
 int read(const SPosition &u, STrie *cur)
 {
     if (cur->val != -1)
         return cur->val;
-}
-
-void screenshot(int x, int y, int w, int h)
-{
-    HDC src = GetDC(NULL);
-    HDC mem = CreateCompatibleDC(src);
-    HBITMAP map = CreateCompatibleBitmap(src, w, h);
-    HBITMAP mapold = (HBITMAP)SelectObject(mem, map);
-    BitBlt(mem, 0, 0, w, h, src, x, y, SRCCOPY);
-    map = (HBITMAP)SelectObject(mem, mapold);
-    DeleteDC(src);
-    DeleteDC(mem);
+    int hsh = hash(scan(u.x + cur->pos.x, u.y + cur->pos.y));
+    for (std::pair<int, STrie *> &v : cur->ve)
+        if (v.first == hsh)
+            return read(u, v.second);
 }
 
 void click()
@@ -64,7 +75,7 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
         {
             hsh.clear();
             for (int &v : ve)
-                hsh.push_back(hash(bmp(st.x + dis * v + x, st.y + y)));
+                hsh.push_back(hash(conv(bmp(st.x + dis * v + x, st.y + y))));
             sort(hsh.begin(), hsh.end());
             hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
             ans = std::max(ans, std::make_pair(hsh.size(), SPosition(x, y)));
@@ -74,14 +85,14 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
     STrie *board = new STrie(-1, ans.second);
     hsh.clear();
     for (int &v : ve)
-        hsh.push_back(hash(bmp(st.x + dis * v + board->pos.x, st.y + board->pos.y)));
+        hsh.push_back(hash(conv(bmp(st.x + dis * v + board->pos.x, st.y + board->pos.y))));
     sort(hsh.begin(), hsh.end());
     hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
     for (int &u : hsh)
     {
         std::vector<int> ne;
         for (int &v : ve)
-            if (hash(bmp(st.x + dis * v + board->pos.x, st.y + board->pos.y)) == u)
+            if (hash(conv(bmp(st.x + dis * v + board->pos.x, st.y + board->pos.y))) == u)
                 ne.push_back(v);
         board->ve.push_back(std::make_pair(u, construct(ne, bmp, st, h, w, dis)));
         if (board->ve.back().second == nullptr)
@@ -96,8 +107,7 @@ bool init()
     {
         Sleep(1000);
         hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
-    }
-    while (hwnd == 0);
+    } while (hwnd == 0);
     init_xp();
     init_98();
     HKEY reg;
@@ -147,7 +157,10 @@ void new_game()
 {
     SetForegroundWindow(hwnd);
     GetWindowRect(hwnd, &win);
-    win.left += 6; win.top += 49; win.right -= 7; win.bottom -= 7;
+    win.left += 12;
+    win.top += 55;
+    win.right -= 12;
+    win.bottom -= 12;
 }
 } // namespace NRead
 
