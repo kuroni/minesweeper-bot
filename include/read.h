@@ -16,15 +16,33 @@ struct STrie
 
 HWND hwnd;
 RECT win;
+SPosition bpos(9, 52);
 
 int hash(RGBApixel *px)
 {
     return ((int)px->Red << 16) | ((int)px->Green << 8) | ((int)px->Blue);
+}   
+
+int read(const SPosition &u, STrie *cur)
+{
+    if (cur->val != -1)
+        return cur->val;
 }
 
-int read(const SPosition &u)
+void screenshot(int x, int y, int w, int h)
 {
-    return 0;
+    HDC src = GetDC(NULL);
+    HDC mem = CreateCompatibleDC(src);
+    HBITMAP map = CreateCompatibleBitmap(src, w, h);
+    HBITMAP mapold = (HBITMAP)SelectObject(mem, map);
+    BitBlt(mem, 0, 0, w, h, src, x, y, SRCCOPY);
+    map = (HBITMAP)SelectObject(mem, mapold);
+    DeleteDC(src);
+    DeleteDC(mem);
+}
+
+void click()
+{
 }
 
 void init_xp()
@@ -74,14 +92,14 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
 
 bool init()
 {
+    do
+    {
+        Sleep(1000);
+        hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
+    }
+    while (hwnd == 0);
     init_xp();
     init_98();
-    do
-        hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
-    while (hwnd == 0);
-    SetForegroundWindow(hwnd);
-    RECT tmp;
-    GetWindowRect(hwnd, &win);
     HKEY reg;
     if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Brightsoft\\Minesweeper X"), 0, KEY_QUERY_VALUE, &reg) != ERROR_SUCCESS)
     {
@@ -125,12 +143,11 @@ bool init()
     return true;
 }
 
-void screen_shot()
+void new_game()
 {
-}
-
-void click()
-{
+    SetForegroundWindow(hwnd);
+    GetWindowRect(hwnd, &win);
+    win.left += 6; win.top += 49; win.right -= 7; win.bottom -= 7;
 }
 } // namespace NRead
 
