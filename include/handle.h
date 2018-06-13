@@ -1,10 +1,13 @@
-#ifndef READ_H
-#define READ_H
+#ifndef HANDLE_H
+#define HANDLE_H
 #include "declare.h"
 #include "EasyBMP.h"
 
-namespace NRead
+namespace NHandle
 {
+HWND hwnd;
+RECT win;
+
 struct STrie
 {
     int val;
@@ -20,9 +23,6 @@ struct SPixel
 
     SPixel(int _r, int _g, int _b) : r(_r), g(_g), b(_b) {}
 };
-
-HWND hwnd;
-RECT win;
 
 int hash(SPixel px)
 {
@@ -50,6 +50,11 @@ int read(const SPosition &u, STrie *cur)
     for (std::pair<int, STrie *> &v : cur->ve)
         if (v.first == hsh)
             return read(u, v.second);
+}
+
+int read_board(const SPosition &u)
+{
+    return read(SPosition(u.x * 16 + 15, u.y * 16 + 101), board);
 }
 
 void click()
@@ -80,7 +85,7 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
             hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
             ans = std::max(ans, std::make_pair(hsh.size(), SPosition(x, y)));
         }
-    if (ans.first == 0)
+    if (ans.first == 1)
         return nullptr;
     STrie *board = new STrie(-1, ans.second);
     hsh.clear();
@@ -103,11 +108,6 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
 
 bool init()
 {
-    do
-    {
-        Sleep(1000);
-        hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
-    } while (hwnd == 0);
     init_xp();
     init_98();
     HKEY reg;
@@ -155,13 +155,19 @@ bool init()
 
 void new_game()
 {
+    do
+    {
+        Sleep(1000);
+        hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
+    } while (hwnd == 0);
     SetForegroundWindow(hwnd);
     GetWindowRect(hwnd, &win);
-    win.left += 12;
-    win.top += 55;
-    win.right -= 12;
-    win.bottom -= 12;
+    m = (win.bottom - win.top - 116) / 16;
+    n = (win.right - win.left - 30) / 16;
+    min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 
+        + read(SPosition(win.left + 34, win.top + 63), mine) * 10 
+        + read(SPosition(win.left + 47, win.top + 63), mine);
 }
-} // namespace NRead
+} // namespace NHandle
 
-#endif // READ_H
+#endif // HANDLE_H

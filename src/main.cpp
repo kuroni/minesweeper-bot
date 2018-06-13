@@ -1,8 +1,12 @@
-#include "read.h"
+#include "handle.h"
 #include "solve.h"
 
 int main()
 {
-    NRead::init();
-    NRead::new_game();
+    if (!NHandle::init())
+    {
+        std::cerr << "Faulty skin!";
+        return 0;
+    }
+    NHandle::new_game();
 }

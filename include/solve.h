@@ -1,7 +1,7 @@
 #ifndef SOLVE_H
 #define SOLVE_H
 #include "declare.h"
-#include "read.h"
+#include "handle.h"
 
 namespace NSolve
 {
@@ -16,9 +16,9 @@ struct SComponent
 
 void open(const SPosition &u)
 {
-    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NRead::read(u, NRead::board)) == 0)
+    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NHandle::read_board(u) == 0))
         for (int i = 0; i < 8; i++)
-            if (num[u.x + DX[i]][u.y + DY[i]] == -1)
+            if (SPosition(u.x + DX[i], u.y + DY[i]).on_board() && num[u.x + DX[i]][u.y + DY[i]] == -1)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));
 }
 
@@ -29,8 +29,8 @@ void probability();
 void naive()
 {
     bool border = false;
-    for (int x = 1; x <= m; x++)
-        for (int y = 1; y <= n; y++)
+    for (int x = 0; x < m; x++)
+        for (int y = 0; y < n; y++)
             if (SPosition(x, y).border_valid())
             {
                 border = true;
@@ -38,7 +38,7 @@ void naive()
                 bool move = false;
                 SComponent cur;
                 for (int i = 0; i < 8; i++)
-                    if (num[u.x + DX[i]][u.y + DY[i]] == -1)
+                    if (SPosition(u.x + DX[i], u.y + DY[i]).on_board() && num[u.x + DX[i]][u.y + DY[i]] == -1)
                         cur.ve.push_back(SPosition(u.x + DX[i], u.y + DY[i]));
                 int yes = (1 << cur.ve.size()) - 1, no = 0;
                 for (int mask = 0; mask < (1 << cur.ve.size()); mask++)
@@ -52,7 +52,7 @@ void naive()
                     if (yes >> i & 1)
                     {
                         move = true;
-                        NRead::click();
+                        NHandle::click();
                         open(cur.ve[i]);
                     }
                     if (no >> i & 1)
