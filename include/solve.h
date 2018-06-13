@@ -1,8 +1,7 @@
 #ifndef SOLVE_H
 #define SOLVE_H
 #include "declare.h"
-#include "move.h"
-#include "read.h"
+#include "process.h"
 
 namespace NSolve
 {
@@ -17,21 +16,15 @@ struct SComponent
 
 void open(const SPosition &u)
 {
-    if (num[u.x][u.y] == -1)
-    {
-        NMove::left_click(u);
-        if ((num[u.x][u.y] = NRead::read(u)) == 0)
-            for (int i = 0; i < 8; i++)
-                if (num[u.x + DX[i]][u.y + DY[i]] == -1)
-                    open(SPosition(u.x + DX[i], u.y + DY[i]));
-    }
+    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NProcess::read(u)) == 0)
+        for (int i = 0; i < 8; i++)
+            if (num[u.x + DX[i]][u.y + DY[i]] == -1)
+                open(SPosition(u.x + DX[i], u.y + DY[i]));
 }
 
-void mark(const SPosition &u)
-{
-    NMove::right_click(u);
-    num[u.x][u.y] = 10;
-}
+void naive();
+void tanker();
+void probability();
 
 void naive()
 {
@@ -59,12 +52,13 @@ void naive()
                     if (yes >> i & 1)
                     {
                         move = true;
+                        NProcess::click();
                         open(cur.ve[i]);
                     }
                     if (no >> i & 1)
                     {
                         move = false;
-                        mark(cur.ve[i]);
+                        num[cur.ve[i].x][cur.ve[i].y] = 10;
                     }
                 }
                 if (move)

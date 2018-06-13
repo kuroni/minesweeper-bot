@@ -3,8 +3,11 @@
 #include <vector>
 #include <algorithm>
 #include <windows.h>
+#include <iostream>
 
-const int M = 105, N = 105, DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
+const int M = 105, N = 105;
+const int DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
+const int SZ = 512;
 
 struct SPosition
 {
@@ -19,12 +22,12 @@ struct SPosition
     bool border_valid()
     {
     }
-
-    bool operator<(const SPosition &b)
-    {
-        return x < b.x || (x == b.x && y < b.y);
-    }
 };
+
+inline bool operator<(const SPosition &a, const SPosition &b)
+{
+    return a.x < b.x || (a.x == b.x && a.y < b.y);
+}
 
 int m, n, num[M][N];
 
