@@ -3,10 +3,10 @@
 
 int main()
 {
-    if (!NHandle::init())
+    if (!NHandle::init_skin())
     {
         std::cerr << "Faulty skin!";
         return 0;
     }
-    NHandle::new_game();
+    // NHandle::init_game();
 }

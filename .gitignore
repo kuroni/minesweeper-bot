@@ -34,5 +34,6 @@
 # Visual Studio Code configuration folder
 .vscode/
 
-# Executable folder
+# Executable and object folder
+obj/
 bin/

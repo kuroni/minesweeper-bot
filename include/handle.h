@@ -42,10 +42,14 @@ SPixel scan(int x, int y)
     return SPixel(GetRValue(px), GetGValue(px), GetBValue(px));
 }
 
+// get the value of the current element given a determine tree
 int read(const SPosition &u, STrie *cur)
 {
+    // base case, at the leaf of the determine tree
     if (cur->val != -1)
         return cur->val;
+    
+    // else, go down into the appropriate child of the current node
     int hsh = hash(scan(u.x + cur->pos.x, u.y + cur->pos.y));
     for (std::pair<int, STrie *> &v : cur->ve)
         if (v.first == hsh)
@@ -61,20 +65,16 @@ void click()
 {
 }
 
-void init_xp()
-{
-}
-
-void init_98()
-{
-}
-
+// construct a determine tree for a set of elements (board number, mine number, status face)
 STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int dis)
 {
+    // base case, the number of element is 1
     if (ve.size() == 1)
         return new STrie(ve.back(), SPosition());
     std::pair<unsigned int, SPosition> ans = std::make_pair(0, SPosition());
     std::vector<int> hsh;
+
+    // find a position (pixel) that divides the original set of elements into as many disjoint sets as possible
     for (int x = 0; x < h; x++)
         for (int y = 0; y < w; y++)
         {
@@ -85,8 +85,12 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
             hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
             ans = std::max(ans, std::make_pair(hsh.size(), SPosition(x, y)));
         }
+
+    // if there is no way to divide the vector of elements, then there are elements with the same properties
     if (ans.first == 1)
         return nullptr;
+
+    // divide the vector into disjoint sets and recursively construct each of the new sets
     STrie *board = new STrie(-1, ans.second);
     hsh.clear();
     for (int &v : ve)
@@ -106,10 +110,20 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
     return board;
 }
 
-bool init()
+bool init_skin()
 {
-    init_xp();
-    init_98();
+    // construct the original skins (XP skin and 98 skin)
+    BMP bmp;
+    bmp.ReadFromFile("data/winxp.bmp");
+    boardxp = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16);
+    minexp = construct({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, bmp, SPosition(0, 33), 11, 21, 12);
+    facexp = construct({0, 2, 3}, bmp, SPosition(0, 55), 26, 26, 27);
+    bmp.ReadFromFile("data/win98.bmp");
+    board98 = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16);
+    mine98 = construct({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, bmp, SPosition(0, 33), 11, 21, 12);
+    face98 = construct({0, 2, 3}, bmp, SPosition(0, 55), 26, 26, 27);
+
+    // find the skin that the current Minesweeper X process uses
     HKEY reg;
     if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Brightsoft\\Minesweeper X"), 0, KEY_QUERY_VALUE, &reg) != ERROR_SUCCESS)
     {
@@ -122,6 +136,8 @@ bool init()
     char val[SZ];
     DWORD len = SZ;
     RegQueryValueEx(reg, "Skin", NULL, NULL, (LPBYTE)&val, &len);
+
+    // 00 -> XP skin, 01 -> 98 skin, 02 -> custom skin
     if (val[0] == 0)
     {
         board = boardxp;
@@ -140,8 +156,9 @@ bool init()
     }
     std::fill(val, val + SZ, 0);
     len = SZ;
+
+    // custom skin path lies within the SkinPath key
     RegQueryValueEx(reg, "SkinPath", NULL, NULL, (LPBYTE)&val, &len);
-    BMP bmp;
     bmp.ReadFromFile(val);
     RegCloseKey(reg);
     if ((board = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16)) == nullptr)
@@ -153,7 +170,7 @@ bool init()
     return true;
 }
 
-void new_game()
+void init_game()
 {
     do
     {
@@ -164,9 +181,7 @@ void new_game()
     GetWindowRect(hwnd, &win);
     m = (win.bottom - win.top - 116) / 16;
     n = (win.right - win.left - 30) / 16;
-    min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 
-        + read(SPosition(win.left + 34, win.top + 63), mine) * 10 
-        + read(SPosition(win.left + 47, win.top + 63), mine);
+    min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 + read(SPosition(win.left + 34, win.top + 63), mine) * 10 + read(SPosition(win.left + 47, win.top + 63), mine);
 }
 } // namespace NHandle
 
