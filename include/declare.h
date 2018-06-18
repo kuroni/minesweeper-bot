@@ -4,7 +4,6 @@
 #include <iostream>
 #include <windows.h>
 
-
 const int DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
 const int SZ = 512;
 

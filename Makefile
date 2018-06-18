@@ -10,13 +10,13 @@ CXXFLAGS := -std=c++17 -O2 -Wall -I$(INCDIR)
 .PHONY: clean
 
 $(BINDIR)/out: $(OBJ)
-	g++ $(CXXFLAGS) -o $@ $? $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $? $(LDFLAGS)
 
 $(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(INC)
-	g++ $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
 
 $(OBJDIR)/EasyBMP.o: $(SRCDIR)/EasyBMP.cpp
-	g++ $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
 
 clean:
-	-del /s /q $(OBJDIR)
+	$(RM) $(OBJ)

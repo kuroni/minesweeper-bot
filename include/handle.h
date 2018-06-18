@@ -80,7 +80,7 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
                 hsh.push_back(hash(conv(bmp(st.x + dis * v + x, st.y + y))));
             sort(hsh.begin(), hsh.end());
             hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
-            ans = std::max(ans, std::make_pair(hsh.size(), SPosition(x, y)));
+            ans = std::max(ans, std::make_pair((unsigned int)hsh.size(), SPosition(x, y)));
         }
 
     // if there is no way to divide the vector of elements, then there are elements with the same properties
@@ -132,7 +132,7 @@ bool init_skin()
     }
     char val[SZ];
     DWORD len = SZ;
-    RegQueryValueEx(reg, "Skin", NULL, NULL, (LPBYTE)&val, &len);
+    RegQueryValueEx(reg, TEXT("Skin"), NULL, NULL, (LPBYTE)&val, &len);
 
     // 00 -> XP skin, 01 -> 98 skin, 02 -> custom skin
     if (val[0] == 0)
@@ -155,7 +155,7 @@ bool init_skin()
     len = SZ;
 
     // custom skin path lies within the SkinPath key
-    RegQueryValueEx(reg, "SkinPath", NULL, NULL, (LPBYTE)&val, &len);
+    RegQueryValueEx(reg, TEXT("SkinPath"), NULL, NULL, (LPBYTE)&val, &len);
     bmp.ReadFromFile(val);
     RegCloseKey(reg);
     if ((board = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16)) == nullptr)
