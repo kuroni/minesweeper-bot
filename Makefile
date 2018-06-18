@@ -16,7 +16,7 @@ $(BINDIR)/out: $(OBJ)
 $(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(INC)
 	$(CXX) $(CXXFLAGS) -c -o $@ $< $(LDFLAGS)
 
-$(OBJDIR)/qdbmp.o: $(SRCDIR)/qdbmp.c
+$(OBJDIR)/qdbmp.o: $(SRCDIR)/qdbmp.c $(INCDIR)/qdbmp.h
 	$(CC) $(CFLAGS) -c -o $@ $< $(LDFLAGS)
 
 clean:
