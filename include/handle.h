@@ -1,5 +1,4 @@
-#ifndef HANDLE_H
-#define HANDLE_H
+#pragma once
 #include "declare.h"
 #include "EasyBMP.h"
 
@@ -23,6 +22,12 @@ struct SPixel
 
     SPixel(int _r, int _g, int _b) : r(_r), g(_g), b(_b) {}
 };
+
+void click(const SPosition &u)
+{
+    SetCursorPos(u.x, u.y);
+    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+}
 
 int hash(SPixel px)
 {
@@ -54,15 +59,7 @@ int read(const SPosition &u, STrie *cur)
     for (std::pair<int, STrie *> &v : cur->ve)
         if (v.first == hsh)
             return read(u, v.second);
-}
-
-int read_board(const SPosition &u)
-{
-    return read(SPosition(u.x * 16 + 15, u.y * 16 + 101), board);
-}
-
-void click()
-{
+    return -1;
 }
 
 // construct a determine tree for a set of elements (board number, mine number, status face)
@@ -181,8 +178,8 @@ void init_game()
     GetWindowRect(hwnd, &win);
     m = (win.bottom - win.top - 116) / 16;
     n = (win.right - win.left - 30) / 16;
-    min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 + read(SPosition(win.left + 34, win.top + 63), mine) * 10 + read(SPosition(win.left + 47, win.top + 63), mine);
+    min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 
+        + read(SPosition(win.left + 34, win.top + 63), mine) * 10 
+        + read(SPosition(win.left + 47, win.top + 63), mine);
 }
 } // namespace NHandle
-
-#endif // HANDLE_H

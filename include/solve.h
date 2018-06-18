@@ -1,5 +1,4 @@
-#ifndef SOLVE_H
-#define SOLVE_H
+#pragma once
 #include "declare.h"
 #include "handle.h"
 
@@ -11,12 +10,24 @@ struct SComponent
 
     bool valid(int mask)
     {
+        bool ret = true;
+        for (unsigned int i = 0; i < ve.size(); i++)
+        {
+            SPosition &u = ve[i];
+            num[u.x][u.y] = 9 + (mask >> i & 1);
+        }
+        for (SPosition &u : ve)
+            for (int i = 0; i < 8; i++)
+                ret &= SPosition(u.x + DX[i], u.y + DY[i]).valid();
+        for (SPosition &u : ve)
+            num[u.x][u.y] = -1;
+        return ret;
     }
 };
 
-void open(const SPosition &u)
+void open(SPosition u)
 {
-    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NHandle::read_board(u) == 0))
+    if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NHandle::read(u.pixel_pos(), NHandle::board) == 0))
         for (int i = 0; i < 8; i++)
             if (SPosition(u.x + DX[i], u.y + DY[i]).on_board() && num[u.x + DX[i]][u.y + DY[i]] == -1)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));
@@ -47,12 +58,12 @@ void naive()
                         yes &= mask;
                         no |= mask;
                     }
-                for (int i = 0; i < cur.ve.size(); i++)
+                for (unsigned int i = 0; i < cur.ve.size(); i++)
                 {
                     if (yes >> i & 1)
                     {
                         move = true;
-                        NHandle::click();
+                        NHandle::click(cur.ve[i].pixel_pos());
                         open(cur.ve[i]);
                     }
                     if (no >> i & 1)
@@ -76,5 +87,3 @@ void tanker()
     
 }
 } // namespace NSolve
-
-#endif // SOLVE_H
