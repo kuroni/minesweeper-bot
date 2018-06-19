@@ -7,7 +7,9 @@
 const int DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
 const int SZ = 512;
 
-int m, n, min, num[SZ][SZ];
+int m, n, min, st, num[SZ][SZ];
+HWND hwnd;
+RECT win;
 
 struct SPosition
 {
@@ -26,19 +28,19 @@ struct SPosition
             return true;
         if (num[x][y] < 0 || num[x][y] > 8)
             return true;
-        int close = 0, mine = 0;
+        int open = 0, mine = 0;
         for (int i = 0; i < 8; i++)
             if (SPosition(x + DX[i], y + DY[i]).on_board())
                 switch (num[x + DX[i]][y + DY[i]])
                 {
                     case -1:
-                        close++;
+                        open++;
                         break;
                     case 10:
                         mine++;
                         break;
                 }
-        return (mine <= num[x][y] && mine + close >= num[x][y]);
+        return (mine <= num[x][y] && mine + open >= num[x][y]);
     }
 
     bool border_valid()
@@ -55,7 +57,7 @@ struct SPosition
 
     SPosition pixel_pos()
     {
-        return SPosition(x * 16 + 15, y * 16 + 101);
+        return SPosition(win.left + y * 16 + 15, win.top + x * 16 + 101);
     }
 };
 
