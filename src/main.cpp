@@ -1,5 +1,5 @@
-#include "handle.h"
-#include "solve.h"
+#include "handle.hpp"
+#include "solve.hpp"
 
 int main()
 {

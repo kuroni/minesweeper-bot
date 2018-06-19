@@ -3,7 +3,7 @@ OBJDIR := obj
 BINDIR := bin
 INCDIR := include
 OBJ := $(OBJDIR)/main.o $(OBJDIR)/qdbmp.o
-INC := $(INCDIR)/handle.h $(INCDIR)/solve.h $(INCDIR)/declare.h
+INC := $(wildcard $(INCDIR)/*.hpp)
 LDFLAGS := -lgdi32
 CXXFLAGS := -std=c++17 -O2 -Wall -I$(INCDIR)
 CFLAGS := -std=c11 -O2 -Wall -I$(INCDIR)

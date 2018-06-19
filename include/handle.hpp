@@ -1,5 +1,5 @@
 #pragma once
-#include "declare.h"
+#include "declare.hpp"
 extern "C"
 {
     #include "qdbmp.h"
