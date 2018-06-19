@@ -57,7 +57,6 @@ void probability();
 
 void solve()
 {
-    int st;
     for (int x = 0; x < m; x++)
         for (int y = 0; y < n; y++)
             num[x][y] = -1;
@@ -66,7 +65,6 @@ void solve()
             if (num[x][y] == -1)
             {
                 NHandle::click(SPosition(x, y).pixel_pos());
-                st = NHandle::status();
                 if (st == 2)
                 {
                     std::cout << "Fail\n";
@@ -81,7 +79,6 @@ void solve()
                 {
                     open(SPosition(x, y));  
                     naive();
-                    st = NHandle::status();
                     if (st == 2)
                     {
                         std::cout << "Fail\n";
@@ -130,17 +127,8 @@ void naive()
                     {
                         move = true;
                         NHandle::click(cur.ve[i].pixel_pos());
-                        int st = NHandle::status();
-                        if (st == 2)
-                        {
-                            std::cout << "Fail\n";
+                        if (st != 0)
                             return;
-                        }
-                        else if (st == 3)
-                        {
-                            std::cout << "Finish\n";
-                            return;
-                        }
                         open(cur.ve[i]);
                     }
                 }

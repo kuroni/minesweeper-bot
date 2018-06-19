@@ -9,5 +9,5 @@ int main()
         return 0;
     }
     NHandle::init_game();
-    // NSolve::solve();
+    NSolve::solve();
 }

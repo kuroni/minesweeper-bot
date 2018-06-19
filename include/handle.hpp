@@ -25,12 +25,6 @@ struct SPixel
     }
 };
 
-void click(const SPosition &u)
-{
-    SetCursorPos(u.x, u.y);
-    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-}
-
 SPixel conv(RGBApixel *px)
 {
     return SPixel((int)px->Red, (int)px->Green, (int)px->Blue);
@@ -56,9 +50,12 @@ int read(const SPosition &u, STrie *cur)
     return -1;
 }
 
-int status()
+void click(const SPosition &u)
 {
-    return read(SPosition(win.left + 66, win.top + 61), face);
+    SetCursorPos(u.x, u.y);
+    mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+    st = read(SPosition(win.left + 66, win.top + 61), face);
+    // Sleep(5);
 }
 
 // Construct a determine tree for a set of elements (board number, mine number, status face)
@@ -163,6 +160,7 @@ void init_game()
     ShowWindow(hwnd, SW_SHOWDEFAULT);
     SetForegroundWindow(hwnd);
     GetWindowRect(hwnd, &win);
+    st = 0;
     m = (win.bottom - win.top - 116) / 16;
     n = (win.right - win.left - 30) / 16;
     min = read(SPosition(win.left + 21, win.top + 63), mine) * 100 

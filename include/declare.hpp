@@ -7,7 +7,7 @@
 const int DX[8] = {0, 0, 1, 1, 1, -1, -1, -1}, DY[8] = {-1, 1, -1, 0, 1, -1, 0, 1};
 const int SZ = 512;
 
-int m, n, min, num[SZ][SZ];
+int m, n, min, st, num[SZ][SZ];
 HWND hwnd;
 RECT win;
 
@@ -57,7 +57,7 @@ struct SPosition
 
     SPosition pixel_pos()
     {
-        return SPosition(win.top + x * 16 + 101, win.left + y * 16 + 15);
+        return SPosition(win.left + y * 16 + 15, win.top + x * 16 + 101);
     }
 };
 
