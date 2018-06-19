@@ -22,27 +22,6 @@ struct SComponent
     }
 };
 
-// int read(SPosition u)
-// {
-//     int x;
-//     std::cout << u.x << " " << u.y << ": ";
-//     std::cin >> x;
-//     return x;
-// }
-
-// int status()
-// {
-//     int x;
-//     std::cout << "status: ";
-//     std::cin >> x;
-//     return x;
-// }
-
-// void click(SPosition u)
-// {
-//     std::cout << "click: " << u.x << " " << u.y << std::endl;
-// }
-
 void open(SPosition u)
 {
     if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NHandle::read(u.pixel_pos(), NHandle::board)) == 0)
@@ -50,6 +29,23 @@ void open(SPosition u)
             if (SPosition(u.x + DX[i], u.y + DY[i]).on_board() && num[u.x + DX[i]][u.y + DY[i]] == -1)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));
 }
+
+#define check_status(if_return)          \
+    if (st != 0)                         \
+    {                                    \
+        if (st == 2)                     \
+        {                                \
+            if (if_return)               \
+                std::cout << "Fail\n";   \
+            return;                      \
+        }                                \
+        if (st == 3)                     \
+        {                                \
+            if (if_return)               \
+                std::cout << "Finish\n"; \
+            return;                      \
+        }                                \
+    }
 
 void naive();
 void tanker();
@@ -65,31 +61,10 @@ void solve()
             if (num[x][y] == -1)
             {
                 NHandle::click(SPosition(x, y).pixel_pos());
-                if (st == 2)
-                {
-                    std::cout << "Fail\n";
-                    return;
-                }
-                else if (st == 3)
-                {
-                    std::cout << "Finish\n";
-                    return;
-                }
-                else
-                {
-                    open(SPosition(x, y));  
-                    naive();
-                    if (st == 2)
-                    {
-                        std::cout << "Fail\n";
-                        return;
-                    }
-                    else if (st == 3)
-                    {
-                        std::cout << "Finish\n";
-                        return;
-                    }
-                }
+                check_status(true);
+                open(SPosition(x, y));
+                naive();
+                check_status(true);
             }
     std::cout << "Finish\n";
     return;
@@ -127,8 +102,7 @@ void naive()
                     {
                         move = true;
                         NHandle::click(cur.ve[i].pixel_pos());
-                        if (st != 0)
-                            return;
+                        check_status(false);
                         open(cur.ve[i]);
                     }
                 }
@@ -144,6 +118,5 @@ void naive()
 
 void tanker()
 {
-    
 }
 } // namespace NSolve
