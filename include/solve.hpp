@@ -1,6 +1,6 @@
 #pragma once
-#include "declare.h"
-#include "handle.h"
+#include "declare.hpp"
+#include "handle.hpp"
 
 namespace NSolve
 {
