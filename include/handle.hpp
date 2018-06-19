@@ -54,8 +54,9 @@ void click(const SPosition &u)
 {
     SetCursorPos(u.x, u.y);
     mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+    // Check the status of the game after the click
+    // 0 - game is continuing, 2 - game has failed, 3 - game has succeeded
     st = read(SPosition(win.left + 66, win.top + 61), face);
-    // Sleep(5);
 }
 
 // Construct a determine tree for a set of elements (board number, mine number, status face)
@@ -75,6 +76,7 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
             hsh.resize(std::distance(hsh.begin(), std::unique(hsh.begin(), hsh.end())));
             ans = std::max(ans, std::make_pair((unsigned int)hsh.size(), SPosition(x, y)));
         }
+    // if all of the elements are the same
     if (ans.first == 1)
         return nullptr;
     STrie *board = new STrie(-1, ans.second);
@@ -99,6 +101,7 @@ STrie *construct(std::vector<int> ve, BMP &bmp, SPosition st, int h, int w, int 
 // Initialize default/custom skin
 bool init_skin()
 {
+    // default skin
     BMP bmp;
     bmp.ReadFromFile("data/winxp.bmp");
     boardxp = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16);
@@ -108,6 +111,8 @@ bool init_skin()
     board98 = construct({0, 1, 2, 3, 4, 5, 6, 7, 8}, bmp, SPosition(0, 0), 16, 16, 16);
     mine98 = construct({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, bmp, SPosition(0, 33), 11, 21, 12);
     face98 = construct({0, 2, 3}, bmp, SPosition(0, 55), 26, 26, 27);
+
+    // custom skin
     HKEY reg;
     if (RegOpenKeyEx(HKEY_CURRENT_USER, TEXT("Software\\Brightsoft\\Minesweeper X"), 0, KEY_QUERY_VALUE, &reg) != ERROR_SUCCESS)
     {
@@ -150,6 +155,7 @@ bool init_skin()
     return true;
 }
 
+// Get the handle of the game client and game dimensions/mine count
 void init_game()
 {
     do
@@ -157,7 +163,7 @@ void init_game()
         Sleep(1000);
         hwnd = FindWindow(NULL, TEXT("Minesweeper X"));
     } while (hwnd == 0);
-    ShowWindow(hwnd, SW_SHOWDEFAULT);
+    ShowWindow(hwnd, SW_RESTORE);
     SetForegroundWindow(hwnd);
     GetWindowRect(hwnd, &win);
     st = 0;

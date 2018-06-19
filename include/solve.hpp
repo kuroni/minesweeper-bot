@@ -22,6 +22,7 @@ struct SComponent
     }
 };
 
+// DFS to check for new cells' information
 void open(SPosition u)
 {
     if (num[u.x][u.y] == -1 && (num[u.x][u.y] = NHandle::read(u.pixel_pos(), NHandle::board)) == 0)
@@ -70,6 +71,7 @@ void solve()
     return;
 }
 
+// Only solve adjacent open cells of a number cell
 void naive()
 {
     bool border = false;
@@ -116,7 +118,10 @@ void naive()
         tanker();
 }
 
+// Create disjoint sets of open border cells and solve each of them
 void tanker()
 {
 }
+
+// Tanker but with probability
 } // namespace NSolve
