@@ -31,21 +31,22 @@ void open(SPosition u)
                 open(SPosition(u.x + DX[i], u.y + DY[i]));
 }
 
-#define check_status(if_return)          \
-    if (st != 0)                         \
-    {                                    \
-        if (st == 2)                     \
-        {                                \
-            if (if_return)               \
-                std::cout << "Fail\n";   \
-            return;                      \
-        }                                \
-        if (st == 3)                     \
-        {                                \
-            if (if_return)               \
-                std::cout << "Finish\n"; \
-            return;                      \
-        }                                \
+#define check_status(if_return)                                                \
+    st = NHandle::read(SPosition(win.left + 66, win.top + 61), NHandle::face); \
+    if (st != 0)                                                               \
+    {                                                                          \
+        if (st == 2)                                                           \
+        {                                                                      \
+            if (if_return)                                                     \
+                std::cout << "Fail\n";                                         \
+            return;                                                            \
+        }                                                                      \
+        if (st == 3)                                                           \
+        {                                                                      \
+            if (if_return)                                                     \
+                std::cout << "Finish\n";                                       \
+            return;                                                            \
+        }                                                                      \
     }
 
 void naive();

@@ -54,9 +54,6 @@ void click(const SPosition &u)
 {
     SetCursorPos(u.x, u.y);
     mouse_event(MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-    // Check the status of the game after the click
-    // 0 - game is continuing, 2 - game has failed, 3 - game has succeeded
-    st = read(SPosition(win.left + 66, win.top + 61), face);
 }
 
 // Construct a determine tree for a set of elements (board number, mine number, status face)
